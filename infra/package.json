@@ -1,0 +1,25 @@
+{
+  "name": "pressroom-infra",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx test/stack.test.ts",
+    "synth": "cdk synth --all",
+    "deploy:base": "cdk deploy PressRoomBackup PressRoomBase --require-approval never --outputs-file cdk-outputs.json",
+    "deploy:session": "cdk deploy PressRoomSession --require-approval never --outputs-file cdk-outputs.json",
+    "destroy:session": "cdk destroy PressRoomSession --force",
+    "destroy": "cdk destroy --all --force"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.275.0",
+    "constructs": "^10.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "aws-cdk": "^2.1148.0",
+    "tsx": "^4.23.15",
+    "typescript": "5.9"
+  }
+}
