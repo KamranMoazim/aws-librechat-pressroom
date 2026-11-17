@@ -125,6 +125,12 @@ Runbook and developer handover: [docs/runbooks/portal-embed.md](docs/runbooks/po
 
 Runbooks: [backup-and-restore](docs/runbooks/backup-and-restore.md), [update](docs/runbooks/update.md) (with the prepared v0.8.9 exercise), [monitoring](docs/runbooks/monitoring.md), [day-2](docs/runbooks/day-2.md).
 
+## Phase 8: go-live tests and handover
+
+- `tests/golive`: one spec per test in the post (restricted records, chat isolation, offboarding, connector revocation, approved providers, spend, deletion, recovery, approved actions). `npm run golive -- run` writes the test report with evidence; by-hand steps are asked for or listed as MANUAL.
+- Server-side checks run through SSM as fixed, argument-checked queries (`server/bin/golive-check.sh`); MCP calls go through an SSM port forward, nothing is published.
+- Handover pack: [docs/handover.md](docs/handover.md) (architecture, retention matrix, decisions, runbooks, training guides, sign-off checklist).
+
 ## Cost
 
 | Line | Per hour |

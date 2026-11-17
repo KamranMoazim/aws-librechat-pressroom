@@ -1,0 +1,21 @@
+{
+  "name": "pressroom-golive",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "golive": "tsx src/run.ts",
+    "test": "tsx test/specs.test.ts"
+  },
+  "dependencies": {
+    "@azure/msal-node": "^7.2.2",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "playwright-core": "1.65.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
+    "typescript": "5.9"
+  }
+}

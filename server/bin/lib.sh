@@ -15,7 +15,7 @@ compose()
 
 has_service()
 {
-  compose config --services | grep -qx "$1"
+  compose config --services | grep -x "$1" >/dev/null
 }
 
 mongo_eval()

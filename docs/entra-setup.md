@@ -62,6 +62,12 @@ The API that LibreChat exchanges the user's token for (on-behalf-of). Each MCP s
 - Certificates & secrets: new client secret. `npm run secrets` stores it as `/pressroom/secrets/portal-client-secret`; the client id goes to `/pressroom/config/portal-client-id`.
 - Enterprise application > Properties: **Assignment required = Yes**, and assign the same people as LibreChat.
 
+### PressRoom-GoLive (test runner only, remove after sign-off)
+
+- Platform: Mobile and desktop applications, redirect `https://login.microsoftonline.com/common/oauth2/nativeclient`; Authentication > **Allow public client flows: Yes** (device code sign-in).
+- API permissions (delegated): `api://<mcp-client-id>/Mcp.Tools`, Graph `Files.Read.All`, `Sites.Read.All`, `offline_access`. Grant admin consent.
+- Its client id goes in `tests/golive/.env` as `GOLIVE_CLIENT_ID`. After the go-live sign-off, delete the app registration: the MCP servers accept any token for `Mcp.Tools` from this tenant.
+
 ## 5. Role assignments
 
 Enterprise applications > PressRoom-LibreChat > Users and groups:
