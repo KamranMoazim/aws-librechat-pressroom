@@ -20,7 +20,7 @@ fi
 
 command_id=$(aws ssm send-command --region "$REGION" --instance-ids "$id" \
   --document-name AWS-RunShellScript --comment "pressroom spend report" \
-  --parameters "commands=[\"/opt/pressroom/bin/spend-report.sh $month\"]" \
+  --parameters "commands=[\"/opt/pressroom/server/bin/spend-report.sh $month\"]" \
   --query Command.CommandId --output text)
 aws ssm wait command-executed --region "$REGION" --command-id "$command_id" --instance-id "$id" || true
 aws ssm get-command-invocation --region "$REGION" --command-id "$command_id" --instance-id "$id" \

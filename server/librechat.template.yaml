@@ -30,6 +30,12 @@ interface:
     share: true
     public: false
   temporaryChat: true
+  mcpServers:
+    use: true
+    create: false
+    share: false
+    public: false
+    configureObo: false
   retentionMode: 'all'
   generalChatRetention: 2160
   temporaryChatRetention: 24
@@ -76,6 +82,36 @@ endpoints:
       - 'skills'
       - 'ask_user_question'
       - 'tools'
+    toolApproval:
+      enabled: true
+      mode: 'default'
+      allow:
+        - 'mcp:outlook:mail_search'
+        - 'mcp:outlook:mail_get'
+        - 'mcp:outlook:calendar_view'
+      ask:
+        - 'mcp:outlook:draft_reply'
+      reason: 'Check {tool} before it runs.'
+    checkpointer:
+      type: 'mongo'
+      ttl: 86400
+
+mcpSettings:
+  allowedAddresses:
+    - 'mcp-outlook:8101'
+
+mcpServers:
+  outlook:
+    title: 'Outlook'
+    description: 'Search and read your mail, view your calendar, and save reply drafts (never sends)'
+    type: streamable-http
+    url: 'http://mcp-outlook:8101/mcp'
+    startup: false
+    timeout: 60000
+    obo:
+      scopes: 'api://@@MCP_CLIENT_ID@@/Mcp.Tools'
+    requestHeaders:
+      X-Conversation-Id: '{{LIBRECHAT_BODY_CONVERSATIONID}}'
 
 modelSpecs:
   enforce: true

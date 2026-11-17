@@ -3,7 +3,7 @@ import yaml from 'js-yaml';
 import { configSchema } from 'librechat-data-provider';
 
 const file = process.argv[2];
-const config = yaml.load(readFileSync(file, 'utf8'));
+const config = yaml.load(readFileSync(file, 'utf8').replace(/@@[A-Z_][A-Z0-9_]*@@/g, 'placeholder'));
 const result = configSchema.safeParse(config);
 if (!result.success) {
   for (const issue of result.error.issues) {

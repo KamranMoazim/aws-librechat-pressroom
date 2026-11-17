@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node validate.mjs ../../librechat.yaml"
+    "check": "node validate.mjs ../../librechat.template.yaml"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",

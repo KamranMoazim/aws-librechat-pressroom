@@ -2,6 +2,8 @@ services:
   api:
     image: registry.librechat.ai/librechat-ai/librechat-api:v0.8.8@sha256:9cde97da2b504adc90b8b01b606697f1fd6d71e2152345060133c7b41bfabc21
     ports: !reset []
+    depends_on:
+      - mcp-outlook
     environment:
       - MONGO_URI=mongodb://librechat:${MONGO_APP_PASSWORD}@mongodb:27017/LibreChat?authSource=LibreChat
       - ADMIN_PANEL_URL=https://admin.pressroom.${DOMAIN}
@@ -49,3 +51,20 @@ services:
     image: ghcr.io/librechat-ai/codesandbox-client/bundler:latest@sha256:82018dbc54bd2031b0cae3248dd5014e5985afb97255d1938ab38be29bc280da
     container_name: sandpack-bundler
     restart: always
+
+  mcp-outlook:
+    build:
+      context: ../mcp
+      args:
+        SERVER: outlook
+    image: pressroom/mcp-outlook:local
+    container_name: mcp-outlook
+    restart: always
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    environment:
+      - PORT=8101
+      - ENTRA_TENANT_ID=${ENTRA_TENANT_ID}
+      - MCP_CLIENT_ID=${MCP_CLIENT_ID}
+      - MCP_CLIENT_SECRET=${MCP_CLIENT_SECRET}

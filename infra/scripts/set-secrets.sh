@@ -77,6 +77,8 @@ config domain "$(try_env DOMAIN)"
 config acme-email "$(try_env ALERT_EMAIL)"
 config entra-tenant-id "$(try_env ENTRA_TENANT_ID)"
 config openid-client-id "$(try_env OPENID_CLIENT_ID)"
+config mcp-client-id "$(try_env MCP_CLIENT_ID)"
+config sharepoint-tenant "$(try_env SHAREPOINT_TENANT)"
 
 if exists /pressroom/secrets/openid-client-secret && [[ "${ROTATE_OPENID_SECRET:-}" != "1" ]]
 then
@@ -87,6 +89,7 @@ else
   put /pressroom/secrets/openid-client-secret SecureString "$secret"
 fi
 
+provider_key mcp-client-secret "PressRoom-MCP client secret"
 provider_key anthropic-api-key "Anthropic API key"
 provider_key openai-api-key "OpenAI API key"
 provider_key xai-api-key "xAI API key"

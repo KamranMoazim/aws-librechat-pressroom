@@ -51,7 +51,7 @@ export class Schedules extends Construct {
           DocumentName: 'AWS-RunShellScript',
           InstanceIds: [props.instance.instanceId],
           Comment: 'pressroom spend report',
-          Parameters: { commands: ['PURGE=1 /opt/pressroom/bin/spend-report.sh'] },
+          Parameters: { commands: ['PURGE=1 /opt/pressroom/server/bin/spend-report.sh'] },
         }),
         retryPolicy: { maximumRetryAttempts: 3, maximumEventAgeInSeconds: 3600 },
       },

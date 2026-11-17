@@ -1,8 +1,8 @@
 # Deploy from zero
 
-Brings up PressRoom on a fresh server. Run the laptop steps from the repo root and the server steps in an SSM shell (`sudo -i`, then `cd /opt/pressroom`).
+Brings up PressRoom on a fresh server. Run the laptop steps from the repo root and the server steps in an SSM shell (`sudo -i`, then `cd /opt/pressroom/server`).
 
-On the client's own server, skip the laptop steps that touch AWS: copy `server/` to `/opt/pressroom` however their IT moves files, and fill `.env` from `.env.template` by hand or from their secret store.
+On the client's own server, skip the laptop steps that touch AWS: copy `server/` and `mcp/` to `/opt/pressroom` however their IT moves files, and fill `.env` and `librechat.yaml` from their templates by hand or from their secret store.
 
 ## 1. Secrets and settings (laptop, once)
 
@@ -17,17 +17,18 @@ It never replaces an existing secret. `CREDS_KEY` and `CREDS_IV` in particular m
 ```bash
 npm run session:up              # NAT + VPN, starts the server
 npm run registries -- open      # allows Ubuntu, Docker and image registries
-npm run push-server             # copies server/ to /opt/pressroom
+npm run push-server             # copies server/ and mcp/ to /opt/pressroom
 ```
 
 ## 3. Install and configure (server)
 
 ```bash
 bin/bootstrap.sh                # docker, compose, aws cli, certbot
-bin/render-env.sh               # .env from /pressroom/* (mode 600)
+bin/render-env.sh               # .env (600) and librechat.yaml (644) from /pressroom/*
 bin/certs.sh                    # Let's Encrypt via Route 53 DNS-01; CERTS_STAGING=1 for a dry run
 bin/check-models.sh             # every model in modelSpecs exists for our keys
-docker compose pull
+docker compose pull --ignore-buildable
+docker compose build
 docker compose up -d
 docker compose ps
 ```

@@ -15,12 +15,15 @@ server/         what goes on the client's server, unchanged
   docker-compose.yml           LibreChat v0.8.8 deploy-compose.yml, verbatim
   docker-compose.override.yml  digest pins, Mongo auth, nginx TLS, admin panel, Sandpack bundler
   .env.template                LibreChat settings; ${NAME} filled from SSM by bin/render-env.sh
-  librechat.yaml
+  librechat.template.yaml      rendered to librechat.yaml; @@NAME@@ filled from /pressroom/config only
   nginx/templates/             chat., admin., bundler. server blocks (TLS from Let's Encrypt)
   mongo/init/                  creates the app user (readWrite on LibreChat only)
   reports/                     spend report and transaction purge (mongosh)
   bin/                         bootstrap, render-env, certs, check-models, spend-report
   test/                        render-env, MongoDB (auth + spend report) and config schema tests
+mcp/            MCP servers (TypeScript, streamable HTTP, one image per server)
+  src/shared/   token check, on-behalf-of exchange, approved-action recorder, HTTP host
+  src/outlook/  Outlook tools: mail_search, mail_get, calendar_view, draft_reply
 docs/           entra-setup.md, decisions.md, runbooks/
 ```
 
@@ -73,9 +76,17 @@ Only nginx publishes a port. MongoDB runs with auth and LibreChat connects as an
 - $20 per person per month through LibreChat's balance; refills replace the balance.
 - Monthly spend CSV per person and model (`server/reports/spend-report.js`), written to the Object Lock bucket by an EventBridge schedule; transactions older than 13 months are purged.
 - Retention: everything expires 90 days after last activity, temporary chats after 24 h; memories, Code Interpreter, web search and agent actions are off. See [docs/decisions.md](docs/decisions.md).
-- `npm run config:check` validates `librechat.yaml` against LibreChat's own schema and fails on keys it would ignore.
+- `npm run config:check` validates `librechat.template.yaml` against LibreChat's own schema and fails on keys it would ignore.
 
 Runbook: [docs/runbooks/models-and-spend.md](docs/runbooks/models-and-spend.md).
+
+## Phase 3: Microsoft connections
+
+- SharePoint file picker, delegated: people see only the sites they can already open.
+- `mcp-outlook` validates LibreChat's on-behalf-of token, checks the `Outlook.Assistant` role, then makes its own on-behalf-of exchange to Graph. It can search, read, view the calendar and save reply drafts; it has no `Mail.Send`.
+- `draft_reply` needs approval in the chat and writes an approved-action record.
+
+Runbook: [docs/runbooks/microsoft-connections.md](docs/runbooks/microsoft-connections.md).
 
 ## Cost
 

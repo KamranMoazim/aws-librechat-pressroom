@@ -6,10 +6,10 @@
 | --- | --- |
 | Provider keys | SSM `/pressroom/secrets/{anthropic,openai,xai}-api-key`, rendered into `.env` |
 | Anthropic and OpenAI model lists | `.env.template`: `ANTHROPIC_MODELS`, `OPENAI_MODELS` |
-| xAI (custom endpoint) models and rates | `librechat.yaml`: `endpoints.custom[xAI]`, `models.default` and `tokenConfig` |
-| What users can pick | `librechat.yaml`: `modelSpecs.list` (`enforce: true`) plus the agents endpoint |
-| Per-person limit | `librechat.yaml`: `balance` (1,000,000 credits = $1) |
-| Chat retention | `librechat.yaml`: `interface.retentionMode`, `generalChatRetention`, `temporaryChatRetention` |
+| xAI (custom endpoint) models and rates | `librechat.template.yaml`: `endpoints.custom[xAI]`, `models.default` and `tokenConfig` |
+| What users can pick | `librechat.template.yaml`: `modelSpecs.list` (`enforce: true`) plus the agents endpoint |
+| Per-person limit | `librechat.template.yaml`: `balance` (1,000,000 credits = $1) |
+| Chat retention | `librechat.template.yaml`: `interface.retentionMode`, `generalChatRetention`, `temporaryChatRetention` |
 
 Built-in endpoints (`anthropic`, `openAI`) take their model list from env, not from yaml; a `models` block under them is rejected by the config schema.
 

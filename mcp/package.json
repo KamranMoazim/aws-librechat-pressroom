@@ -1,0 +1,28 @@
+{
+  "name": "pressroom-mcp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "npm run test:auth && npm run test:outlook && npm run test:http",
+    "test:auth": "tsx test/auth.test.ts",
+    "test:outlook": "tsx test/outlook.test.ts",
+    "test:http": "tsx test/http.test.ts",
+    "dev:outlook": "tsx watch src/outlook/main.ts"
+  },
+  "dependencies": {
+    "@azure/msal-node": "^7.2.2",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "express": "^5.3.0",
+    "jose": "^6.2.17",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
+    "typescript": "5.9"
+  }
+}

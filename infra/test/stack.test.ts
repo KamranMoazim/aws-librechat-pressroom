@@ -240,7 +240,7 @@ check(
   'monthly spend report runs the server script via ssm',
   scheduleProps.ScheduleExpression === 'cron(0 6 1 * ? *)' &&
     scheduleProps.Target?.Arn === 'arn:aws:scheduler:::aws-sdk:ssm:sendCommand' &&
-    json(scheduleProps.Target?.Input).includes('/opt/pressroom/bin/spend-report.sh'),
+    json(scheduleProps.Target?.Input).includes('/opt/pressroom/server/bin/spend-report.sh'),
   scheduleProps,
 );
 const sendCommand = json(allowing('ssm:SendCommand').map((s: any) => s.Resource));
