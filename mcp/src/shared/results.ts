@@ -6,6 +6,14 @@ export function jsonResult(value: unknown): CallToolResult {
   return { content: [{ type: 'text', text: JSON.stringify(value, null, 2) }] };
 }
 
+export function bounded(value: unknown, maxChars: number): unknown {
+  const text = JSON.stringify(value) ?? 'null';
+  if (text.length <= maxChars) {
+    return value;
+  }
+  return { truncated: true, firstChars: text.slice(0, maxChars) };
+}
+
 export function errorResult(message: string): CallToolResult {
   return { isError: true, content: [{ type: 'text', text: message }] };
 }

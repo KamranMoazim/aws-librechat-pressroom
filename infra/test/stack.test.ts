@@ -147,13 +147,14 @@ const rules = (ruleGroup?.Properties?.FirewallRules ?? []).map((rule: any) => ({
   priority: rule.Priority,
   action: rule.Action,
   response: rule.BlockResponse,
+  redirection: rule.FirewallDomainRedirectionAction,
 }));
 check(
-  'firewall rules allow, allow, block nxdomain',
+  'firewall rules allow (trusting cnames), allow, block nxdomain',
   json(rules) ===
     json([
-      { priority: 100, action: 'ALLOW' },
-      { priority: 200, action: 'ALLOW' },
+      { priority: 100, action: 'ALLOW', redirection: 'TRUST_REDIRECTION_DOMAIN' },
+      { priority: 200, action: 'ALLOW', redirection: 'TRUST_REDIRECTION_DOMAIN' },
       { priority: 300, action: 'BLOCK', response: 'NXDOMAIN' },
     ]),
   rules,
@@ -176,6 +177,13 @@ check(
   ['api.anthropic.com', 'api.openai.com', 'api.x.ai', 'ssm.us-east-1.amazonaws.com'].every(
     (domain) => allowed.includes(domain),
   ) && !allowed.some((domain) => domain.includes('mistral')),
+  allowed,
+);
+check(
+  'allowlist has the relevance api host and elevenlabs, not the relevance website',
+  allowed.includes('*.stack.tryrelevance.com') &&
+    allowed.includes('api.elevenlabs.io') &&
+    !allowed.some((domain) => domain.endsWith('relevanceai.com')),
   allowed,
 );
 check(

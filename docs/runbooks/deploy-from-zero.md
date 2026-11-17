@@ -38,7 +38,10 @@ bin/install-timers.sh           # hourly approved-action export
 
 ```bash
 npm run registries -- close
+npm run egress:check            # only approved providers resolve from inside the containers
 ```
+
+Add Relevance and voice agents to `server/mcp-config/*.json` when the client names them; both start empty ([relevance-voice-egress.md](relevance-voice-egress.md)).
 
 ## 5. Break-glass admin (server, once, before anyone signs in)
 

@@ -45,6 +45,21 @@ config()
   put "$name" String "$value"
 }
 
+optional_config()
+{
+  local name="/pressroom/config/$1" value
+  if exists "$name"
+  then
+    echo "kept $name"
+    return
+  fi
+  read -r -p "$2 (empty to skip): " value
+  if [[ -n "$value" ]]
+  then
+    put "$name" String "$value"
+  fi
+}
+
 provider_key()
 {
   local name="/pressroom/secrets/$1" value
@@ -82,6 +97,10 @@ config entra-tenant-id "$(try_env ENTRA_TENANT_ID)"
 config openid-client-id "$(try_env OPENID_CLIENT_ID)"
 config mcp-client-id "$(try_env MCP_CLIENT_ID)"
 config sharepoint-tenant "$(try_env SHAREPOINT_TENANT)"
+config relevance-region "$(try_env RELEVANCE_REGION)"
+config relevance-project-id "$(try_env RELEVANCE_PROJECT_ID)"
+config elevenlabs-voice-id "$(try_env ELEVENLABS_VOICE_ID)"
+optional_config elevenlabs-phone-number-id "ElevenLabs phone number id for outbound calls"
 
 if exists /pressroom/secrets/openid-client-secret && [[ "${ROTATE_OPENID_SECRET:-}" != "1" ]]
 then
@@ -96,3 +115,5 @@ provider_key mcp-client-secret "PressRoom-MCP client secret"
 provider_key anthropic-api-key "Anthropic API key"
 provider_key openai-api-key "OpenAI API key"
 provider_key xai-api-key "xAI API key"
+provider_key relevance-api-key "Relevance AI API key"
+provider_key elevenlabs-api-key "ElevenLabs API key"

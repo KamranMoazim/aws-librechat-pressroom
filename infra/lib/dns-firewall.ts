@@ -15,8 +15,7 @@ export const PROVIDER_DOMAINS = [
   'graph.microsoft.com',
   'login.microsoftonline.com',
   '*.sharepoint.com',
-  'api.relevanceai.com',
-  '*.relevanceai.com',
+  '*.stack.tryrelevance.com',
   'api.elevenlabs.io',
   'acme-v02.api.letsencrypt.org',
 ];
@@ -64,8 +63,19 @@ export class DnsFirewall extends Construct {
     const ruleGroup = new resolver.CfnFirewallRuleGroup(this, 'Rules', {
       name: 'pressroom-egress',
       firewallRules: [
-        { priority: 100, firewallDomainListId: allowed.attrId, action: 'ALLOW' },
-        { priority: 200, firewallDomainListId: updates.attrId, action: 'ALLOW' },
+        // Graph, Entra sign-in and Relevance CNAME to CDN and Traffic Manager names we do not list.
+        {
+          priority: 100,
+          firewallDomainListId: allowed.attrId,
+          action: 'ALLOW',
+          firewallDomainRedirectionAction: 'TRUST_REDIRECTION_DOMAIN',
+        },
+        {
+          priority: 200,
+          firewallDomainListId: updates.attrId,
+          action: 'ALLOW',
+          firewallDomainRedirectionAction: 'TRUST_REDIRECTION_DOMAIN',
+        },
         {
           priority: 300,
           firewallDomainListId: everything.attrId,

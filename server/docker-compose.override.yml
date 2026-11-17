@@ -5,6 +5,8 @@ services:
     depends_on:
       - mcp-outlook
       - mcp-pace
+      - mcp-relevance
+      - mcp-voice
     environment:
       - MONGO_URI=mongodb://librechat:${MONGO_APP_PASSWORD}@mongodb:27017/LibreChat?authSource=LibreChat
       - ADMIN_PANEL_URL=https://admin.pressroom.${DOMAIN}
@@ -94,6 +96,55 @@ services:
       - PACE_API_URL=http://pace-api:8200
       - PACE_API_KEY=${PACE_API_KEY}
       - AUDIT_DATABASE_URL=postgres://audit_writer:${AUDIT_WRITER_PASSWORD}@auditdb:5432/audit
+
+  mcp-relevance:
+    build:
+      context: ../mcp
+      args:
+        SERVER: relevance
+    image: pressroom/mcp-relevance:local
+    container_name: mcp-relevance
+    restart: always
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    depends_on:
+      - auditdb
+    environment:
+      - PORT=8103
+      - ENTRA_TENANT_ID=${ENTRA_TENANT_ID}
+      - MCP_CLIENT_ID=${MCP_CLIENT_ID}
+      - RELEVANCE_REGION=${RELEVANCE_REGION}
+      - RELEVANCE_PROJECT_ID=${RELEVANCE_PROJECT_ID}
+      - RELEVANCE_API_KEY=${RELEVANCE_API_KEY}
+      - AGENTS_FILE=/config/relevance-agents.json
+      - AUDIT_DATABASE_URL=postgres://audit_writer:${AUDIT_WRITER_PASSWORD}@auditdb:5432/audit
+    volumes:
+      - ./mcp-config/relevance-agents.json:/config/relevance-agents.json:ro
+
+  mcp-voice:
+    build:
+      context: ../mcp
+      args:
+        SERVER: voice
+    image: pressroom/mcp-voice:local
+    container_name: mcp-voice
+    restart: always
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    depends_on:
+      - auditdb
+    environment:
+      - PORT=8104
+      - ENTRA_TENANT_ID=${ENTRA_TENANT_ID}
+      - MCP_CLIENT_ID=${MCP_CLIENT_ID}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - ELEVENLABS_PHONE_NUMBER_ID=${ELEVENLABS_PHONE_NUMBER_ID}
+      - AGENTS_FILE=/config/voice-agents.json
+      - AUDIT_DATABASE_URL=postgres://audit_writer:${AUDIT_WRITER_PASSWORD}@auditdb:5432/audit
+    volumes:
+      - ./mcp-config/voice-agents.json:/config/voice-agents.json:ro
 
   pace-api:
     build:

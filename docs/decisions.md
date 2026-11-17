@@ -16,3 +16,6 @@ Defaults this build ships with, and what the client needs to confirm.
 | 10 | Models | Claude Sonnet 5.5, Claude Opus 5.5, GPT-6 Sol, Grok 4.7 | Which models are approved |
 | 11 | Approved-action records | Kept 7 years: append-only table on the server, hourly export with Object Lock | Their retention rule for action records |
 | 12 | Restricted Pace customers | Visible only to `Pace.Estimating` | Which customers are restricted and who may see them |
+| 13 | Vendor webhooks | None: Relevance results are polled, call transcripts read on demand | A webhook needs a public endpoint; the relay (API Gateway to SQS) is planned but not built |
+| 14 | Relevance and voice agents | Empty allowlists; IT adds agents with the roles allowed to use them | Which agents staff may run, and who may place outbound calls |
+| 15 | Read-aloud and dictation | Read-aloud text goes to ElevenLabs, dictated audio to OpenAI | Both send content to a vendor; browser engines are the no-vendor option |

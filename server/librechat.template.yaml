@@ -93,9 +93,16 @@ endpoints:
         - 'mcp:pace:job_get'
         - 'mcp:pace:estimate_get'
         - 'mcp:pace:job_update_prepare'
+        - 'mcp:relevance:agents_list'
+        - 'mcp:relevance:agent_result'
+        - 'mcp:voice:voice_agents_list'
+        - 'mcp:voice:conversations_list'
+        - 'mcp:voice:conversation_get'
       ask:
         - 'mcp:outlook:draft_reply'
         - 'mcp:pace:job_update_commit'
+        - 'mcp:relevance:agent_run'
+        - 'mcp:voice:start_call'
       reason: 'Check {tool} before it runs.'
     checkpointer:
       type: 'mongo'
@@ -105,6 +112,8 @@ mcpSettings:
   allowedAddresses:
     - 'mcp-outlook:8101'
     - 'mcp-pace:8102'
+    - 'mcp-relevance:8103'
+    - 'mcp-voice:8104'
 
 mcpServers:
   outlook:
@@ -129,6 +138,49 @@ mcpServers:
       scopes: 'api://@@MCP_CLIENT_ID@@/Mcp.Tools'
     requestHeaders:
       X-Conversation-Id: '{{LIBRECHAT_BODY_CONVERSATIONID}}'
+  relevance:
+    title: 'Relevance AI'
+    description: 'Run approved Relevance AI agents and read their results'
+    type: streamable-http
+    url: 'http://mcp-relevance:8103/mcp'
+    startup: false
+    timeout: 60000
+    obo:
+      scopes: 'api://@@MCP_CLIENT_ID@@/Mcp.Tools'
+    requestHeaders:
+      X-Conversation-Id: '{{LIBRECHAT_BODY_CONVERSATIONID}}'
+  voice:
+    title: 'Voice agents'
+    description: 'Read ElevenLabs voice agent calls, transcripts and summaries'
+    type: streamable-http
+    url: 'http://mcp-voice:8104/mcp'
+    startup: false
+    timeout: 60000
+    obo:
+      scopes: 'api://@@MCP_CLIENT_ID@@/Mcp.Tools'
+    requestHeaders:
+      X-Conversation-Id: '{{LIBRECHAT_BODY_CONVERSATIONID}}'
+
+speech:
+  tts:
+    maxInputChars: 4000
+    elevenlabs:
+      apiKey: '${ELEVENLABS_API_KEY}'
+      model: 'eleven_multilingual_v2'
+      voices: ['@@ELEVENLABS_VOICE_ID@@']
+  stt:
+    openai:
+      apiKey: '${OPENAI_API_KEY}'
+      model: 'whisper-1'
+  speechTab:
+    conversationMode: false
+    advancedMode: false
+    speechToText:
+      engineSTT: 'external'
+      autoSendText: -1
+    textToSpeech:
+      engineTTS: 'external'
+      automaticPlayback: false
 
 modelSpecs:
   enforce: true

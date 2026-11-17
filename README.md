@@ -101,6 +101,14 @@ Runbook: [docs/runbooks/microsoft-connections.md](docs/runbooks/microsoft-connec
 
 Runbook: [docs/runbooks/pace-and-approved-actions.md](docs/runbooks/pace-and-approved-actions.md).
 
+## Phase 5: Relevance AI, ElevenLabs, egress
+
+- `mcp-relevance` and `mcp-voice` hold the vendor keys and expose a few tools for allowlisted agents only (`server/mcp-config/*.json`, agent to roles). Running a Relevance agent and starting a call need approval and are recorded.
+- Read-aloud uses ElevenLabs, dictation uses OpenAI, both through LibreChat's `speech:` settings.
+- `npm run egress:check` proves from inside the containers that only approved providers resolve.
+
+Runbook: [docs/runbooks/relevance-voice-egress.md](docs/runbooks/relevance-voice-egress.md).
+
 ## Cost
 
 | Line | Per hour |

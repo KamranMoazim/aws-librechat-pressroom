@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
-    "test": "npm run test:auth && npm run test:outlook && npm run test:pace && npm run test:http && npm run test:runner",
+    "test": "npm run test:auth && npm run test:outlook && npm run test:pace && npm run test:http && npm run test:runner && npm run test:relevance && npm run test:voice",
     "test:auth": "tsx test/auth.test.ts",
     "test:outlook": "tsx test/outlook.test.ts",
     "test:http": "tsx test/http.test.ts",
@@ -15,7 +15,11 @@
     "dev:pace": "tsx watch src/pace/main.ts",
     "pace:permissions": "tsx scripts/pace-permissions.ts",
     "test:runner": "tsx test/runner.test.ts",
-    "check:recorder": "tsx scripts/check-recorder.ts"
+    "check:recorder": "tsx scripts/check-recorder.ts",
+    "test:relevance": "tsx test/relevance.test.ts",
+    "dev:relevance": "tsx watch src/relevance/main.ts",
+    "test:voice": "tsx test/voice.test.ts",
+    "dev:voice": "tsx watch src/voice/main.ts"
   },
   "dependencies": {
     "@azure/msal-node": "^7.2.2",
