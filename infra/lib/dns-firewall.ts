@@ -28,6 +28,8 @@ export const AWS_DOMAINS = [
   'route53.amazonaws.com',
   `s3.${BACKUP_REGION}.amazonaws.com`,
   `*.s3.${BACKUP_REGION}.amazonaws.com`,
+  `s3.${HOME_REGION}.amazonaws.com`,
+  `*.s3.${HOME_REGION}.amazonaws.com`,
   '*.ec2.internal',
   'instance-data',
 ];

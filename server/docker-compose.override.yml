@@ -1,0 +1,50 @@
+services:
+  api:
+    image: registry.librechat.ai/librechat-ai/librechat-api:v0.8.8@sha256:9cde97da2b504adc90b8b01b606697f1fd6d71e2152345060133c7b41bfabc21
+    ports: !reset []
+    environment:
+      - MONGO_URI=mongodb://librechat:${MONGO_APP_PASSWORD}@mongodb:27017/LibreChat?authSource=LibreChat
+      - ADMIN_PANEL_URL=https://admin.pressroom.${DOMAIN}
+
+  admin-panel:
+    image: registry.librechat.ai/clickhouse/librechat-admin-panel:latest@sha256:a395465d1daa3c11495810a8c224df86675985d50de42e98e36eeedbd8aecb94
+    environment:
+      - SESSION_COOKIE_SECURE=true
+
+  client:
+    image: nginx:1.27.0-alpine@sha256:208b70eefac13ee9be00e486f79c695b15cef861c680527171a27d253d834be9
+    depends_on:
+      - sandpack-bundler
+    environment:
+      - DOMAIN=${DOMAIN}
+    volumes: !override
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
+  mongodb:
+    image: mongo:8.0.20@sha256:098862b1339f031900ca66cf8fef799e616d6324fa41b9a263f2ec899552c1ef
+    command: mongod
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_APP_PASSWORD=${MONGO_APP_PASSWORD}
+    volumes:
+      - ./mongo/init:/docker-entrypoint-initdb.d:ro
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.35.1@sha256:8b57fc3c7f46535ddef3828df1538465ac19d892eb57c9a10da6df0880bd5856
+
+  vectordb:
+    image: pgvector/pgvector:0.8.0-pg15-trixie@sha256:8809cfffff0082cf260c9ac752f1dd1afc77f6f0a55c4e6411321e78efc3d9a5
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  rag_api:
+    image: registry.librechat.ai/librechat-ai/librechat-rag-api-dev-lite:latest@sha256:a62ce2221b43a9bb57fa6cb733e7047c80132960272c33d5704028f3071a1251
+
+  sandpack-bundler:
+    image: ghcr.io/librechat-ai/codesandbox-client/bundler:latest@sha256:82018dbc54bd2031b0cae3248dd5014e5985afb97255d1938ab38be29bc280da
+    container_name: sandpack-bundler
+    restart: always

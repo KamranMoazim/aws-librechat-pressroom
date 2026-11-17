@@ -36,8 +36,9 @@ Give alice, bob, carol and dave a Business Basic licence. eve needs none.
 
 ### PressRoom-LibreChat
 
-- Platform: Web, redirect `https://chat.pressroom.<domain>/oauth/openid/callback`, front-channel logout `https://chat.pressroom.<domain>/`.
-- Certificates & secrets: new client secret (store as `/pressroom/openid-client-secret` in SSM).
+- Platform: Web, redirects `https://chat.pressroom.<domain>/oauth/openid/callback` and `https://chat.pressroom.<domain>/api/admin/oauth/openid/callback` (admin panel SSO), front-channel logout `https://chat.pressroom.<domain>/`.
+- Certificates & secrets: new client secret. `infra/scripts/set-secrets.sh` prompts for it and stores it as `/pressroom/secrets/openid-client-secret`.
+- Put the tenant ID and this app's client ID in `infra/.env` as `ENTRA_TENANT_ID` and `OPENID_CLIENT_ID`.
 - Expose an API: Application ID URI `api://<client-id>`, scope `access_as_user` (admins and users can consent).
 - App roles (allowed member types: Users/Groups): `LibreChat.User`, `LibreChat.Admin`, `Pace.Estimating`, `Pace.Production`, `Outlook.Assistant`.
 - API permissions (delegated): Microsoft Graph `openid`, `profile`, `email`, `offline_access`, `User.Read`, `Files.Read.All`; SharePoint `AllSites.Read`. Grant admin consent.

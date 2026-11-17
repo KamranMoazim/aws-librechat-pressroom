@@ -10,7 +10,7 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y ca-certificates curl unzip python3
+apt-get install -y ca-certificates curl unzip python3 certbot python3-certbot-dns-route53
 
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
@@ -35,4 +35,5 @@ install -m 0750 -d /opt/pressroom
 docker --version
 docker compose version
 aws --version
+certbot --version
 echo "bootstrap complete; close the registries from your laptop now"

@@ -11,8 +11,15 @@ infra/          CDK app (TypeScript): the stand-in for the client's datacenter
   lib/          backup-stack (us-west-2), base-stack, session-stack and their constructs
   scripts/      vpn-cert, registries, session-up, pause, teardown
   test/         template assertions
-server/bin/     render-env (SSM -> .env), bootstrap (docker, aws cli)
-docs/           entra-setup.md
+server/         what goes on the client's server, unchanged
+  docker-compose.yml           LibreChat v0.8.8 deploy-compose.yml, verbatim
+  docker-compose.override.yml  digest pins, Mongo auth, nginx TLS, admin panel, Sandpack bundler
+  .env.template                LibreChat settings; ${NAME} filled from SSM by bin/render-env.sh
+  librechat.yaml
+  nginx/templates/             chat., admin., bundler. server blocks (TLS from Let's Encrypt)
+  mongo/init/                  creates the app user (readWrite on LibreChat only)
+  bin/                         bootstrap, render-env, certs
+docs/           entra-setup.md, runbooks/
 ```
 
 ## Stacks
@@ -51,6 +58,12 @@ Done when:
 - an SSM shell works (there is no SSH);
 - on the server, `dig api.mistral.ai` returns NXDOMAIN and `dig api.anthropic.com` resolves;
 - `sudo bin/render-env.sh` writes a root-only `.env` from `/pressroom/*`.
+
+## Phase 1: LibreChat on the server
+
+Follow [docs/runbooks/deploy-from-zero.md](docs/runbooks/deploy-from-zero.md). Done when alice signs in through Entra with MFA, eve is refused, carol reaches the admin panel, and the email login form is gone.
+
+Only nginx publishes a port. MongoDB runs with auth and LibreChat connects as an app user; Meilisearch runs in production mode; debug logging is off so prompts don't land in log files.
 
 ## Cost
 

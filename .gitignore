@@ -8,3 +8,13 @@ cdk-outputs.json
 PLAN*.md
 infra/vpn/
 cdk.context.json
+Progress.md
+server/.env
+server/.env.*
+!server/.env.template
+server/data-node
+server/meili_data_*
+server/images
+server/uploads
+server/logs
+server/skill

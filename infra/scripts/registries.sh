@@ -5,7 +5,7 @@ REGION="${AWS_REGION:-us-east-1}"
 DOMAINS=(
   ports.ubuntu.com '*.ports.ubuntu.com' '*.archive.ubuntu.com' security.ubuntu.com
   download.docker.com registry-1.docker.io auth.docker.io '*.docker.io' production.cloudflare.docker.com
-  ghcr.io pkg-containers.githubusercontent.com
+  registry.librechat.ai ghcr.io pkg-containers.githubusercontent.com
   awscli.amazonaws.com
   pypi.org files.pythonhosted.org registry.npmjs.org
 )

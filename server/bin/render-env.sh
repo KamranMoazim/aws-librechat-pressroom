@@ -3,7 +3,9 @@ set -euo pipefail
 
 REGION="${AWS_REGION:-us-east-1}"
 PREFIX="${PRESSROOM_SSM_PREFIX:-/pressroom}"
-OUT="${1:-$(cd "$(dirname "$0")/.." && pwd)/.env}"
+SERVER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+TEMPLATE="${PRESSROOM_ENV_TEMPLATE:-$SERVER_DIR/.env.template}"
+OUT="${1:-$SERVER_DIR/.env}"
 
 if [[ "$(id -u)" -ne 0 && "${PRESSROOM_ALLOW_NON_ROOT:-}" != "1" ]]
 then
@@ -20,24 +22,32 @@ aws ssm get-parameters-by-path --region "$REGION" --path "$PREFIX" --recursive -
   python3 -I -c '
 import json, re, sys
 
-entries = json.load(sys.stdin)
-if not entries:
-    sys.exit("no parameters found under the prefix")
-for entry in sorted(entries, key=lambda item: item["name"]):
+template_path = sys.argv[1]
+values = {}
+for entry in json.load(sys.stdin):
     key = entry["name"].rsplit("/", 1)[-1].upper().replace("-", "_")
-    if not re.fullmatch(r"[A-Z_][A-Z0-9_]*", key):
-        sys.exit("unusable parameter name: " + entry["name"])
-    value = (
-        entry["value"]
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("$", "$$")
-        .replace("\n", "\\n")
-    )
-    print(key + "=\"" + value + "\"")
-' >"$tmp"
+    if re.search(r"[\s\"\x27`$\\#]", entry["value"]):
+        sys.exit("refusing " + entry["name"] + ": value has whitespace, quotes, $, # or backslash")
+    values[key] = entry["value"]
+
+missing = []
+
+def substitute(match):
+    name, optional = match.group(1), match.group(2) is not None
+    if name in values:
+        return values[name]
+    if not optional:
+        missing.append(name)
+    return ""
+
+with open(template_path) as template:
+    rendered = re.sub(r"\$\{([A-Z_][A-Z0-9_]*)(:-)?\}", substitute, template.read())
+if missing:
+    sys.exit("missing SSM parameters for: " + ", ".join(sorted(set(missing))))
+sys.stdout.write(rendered)
+' "$TEMPLATE" >"$tmp"
 
 chmod 600 "$tmp"
 mv "$tmp" "$OUT"
 trap - EXIT
-echo "wrote $(wc -l <"$OUT" | tr -d ' ') keys to $OUT"
+echo "wrote $OUT from $(basename "$TEMPLATE")"

@@ -216,6 +216,24 @@ check(
   budget?.Properties?.Budget,
 );
 
+const deployBuckets = baseOf('AWS::S3::Bucket');
+check(
+  'deploy bucket private, objects expire in 7 days',
+  deployBuckets.length === 1 &&
+    deployBuckets[0].Properties.PublicAccessBlockConfiguration?.BlockPublicPolicy === true &&
+    json(deployBuckets[0].Properties.LifecycleConfiguration?.Rules).includes(
+      '"ExpirationInDays":7',
+    ),
+  deployBuckets,
+);
+check(
+  'allowlist has s3 in both regions for deploy and backup',
+  ['*.s3.us-east-1.amazonaws.com', '*.s3.us-west-2.amazonaws.com'].every((domain) =>
+    allowed.includes(domain),
+  ),
+  allowed,
+);
+
 const sessionOf = resourcesOf(Template.fromStack(session));
 check('session has one nat gateway', sessionOf('AWS::EC2::NatGateway').length === 1);
 const routes = sessionOf('AWS::EC2::Route');
