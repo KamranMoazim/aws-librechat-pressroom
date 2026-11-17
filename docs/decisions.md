@@ -19,3 +19,5 @@ Defaults this build ships with, and what the client needs to confirm.
 | 13 | Vendor webhooks | None: Relevance results are polled, call transcripts read on demand | A webhook needs a public endpoint; the relay (API Gateway to SQS) is planned but not built |
 | 14 | Relevance and voice agents | Empty allowlists; IT adds agents with the roles allowed to use them | Which agents staff may run, and who may place outbound calls |
 | 15 | Read-aloud and dictation | Read-aloud text goes to ElevenLabs, dictated audio to OpenAI | Both send content to a vendor; browser engines are the no-vendor option |
+| 16 | LibreChat's page CSP | On, report-only (`CSP_REPORT_ONLY=true`); framing is enforced by nginx on every chat response | LibreChat advises report-only first; switch to enforcing after a week with no violations in the browser console |
+| 17 | Who may frame the chat | `'self'` and `https://portal.pressroom.<domain>` only | Each extra app that embeds the chat must be on the same registrable domain and added here |

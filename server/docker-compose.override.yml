@@ -20,10 +20,12 @@ services:
     image: nginx:1.27.0-alpine@sha256:208b70eefac13ee9be00e486f79c695b15cef861c680527171a27d253d834be9
     depends_on:
       - sandpack-bundler
+      - portal
     environment:
       - DOMAIN=${DOMAIN}
     volumes: !override
       - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/pressroom:/usr/share/nginx/pressroom:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
 
   mongodb:
@@ -145,6 +147,22 @@ services:
       - AUDIT_DATABASE_URL=postgres://audit_writer:${AUDIT_WRITER_PASSWORD}@auditdb:5432/audit
     volumes:
       - ./mcp-config/voice-agents.json:/config/voice-agents.json:ro
+
+  portal:
+    build:
+      context: ../mocks/portal
+    image: pressroom/portal:local
+    container_name: portal
+    restart: always
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    environment:
+      - PORT=3000
+      - DOMAIN=${DOMAIN}
+      - ENTRA_TENANT_ID=${ENTRA_TENANT_ID}
+      - PORTAL_CLIENT_ID=${PORTAL_CLIENT_ID}
+      - PORTAL_CLIENT_SECRET=${PORTAL_CLIENT_SECRET}
 
   pace-api:
     build:

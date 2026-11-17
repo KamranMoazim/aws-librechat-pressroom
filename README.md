@@ -109,6 +109,14 @@ Runbook: [docs/runbooks/pace-and-approved-actions.md](docs/runbooks/pace-and-app
 
 Runbook: [docs/runbooks/relevance-voice-egress.md](docs/runbooks/relevance-voice-egress.md).
 
+## Phase 6: inside the in-house web app
+
+- `mocks/portal` stands in for the client's app: its own Entra sign-in, pages that embed LibreChat with deep links.
+- A small probe on the chat host tells the portal whether the person has a chat session; if not, one top-level sign-in and nginx sends them back to the portal page they were on.
+- Only the portal may frame the chat (nginx `frame-ancestors` on every chat response). Proved in a real browser with `npm run embed:test`.
+
+Runbook and developer handover: [docs/runbooks/portal-embed.md](docs/runbooks/portal-embed.md).
+
 ## Cost
 
 | Line | Per hour |

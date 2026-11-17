@@ -96,6 +96,7 @@ config acme-email "$(try_env ALERT_EMAIL)"
 config entra-tenant-id "$(try_env ENTRA_TENANT_ID)"
 config openid-client-id "$(try_env OPENID_CLIENT_ID)"
 config mcp-client-id "$(try_env MCP_CLIENT_ID)"
+config portal-client-id "$(try_env PORTAL_CLIENT_ID)"
 config sharepoint-tenant "$(try_env SHAREPOINT_TENANT)"
 config relevance-region "$(try_env RELEVANCE_REGION)"
 config relevance-project-id "$(try_env RELEVANCE_PROJECT_ID)"
@@ -112,6 +113,7 @@ else
 fi
 
 provider_key mcp-client-secret "PressRoom-MCP client secret"
+provider_key portal-client-secret "PressRoom-Portal client secret"
 provider_key anthropic-api-key "Anthropic API key"
 provider_key openai-api-key "OpenAI API key"
 provider_key xai-api-key "xAI API key"

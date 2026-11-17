@@ -57,8 +57,10 @@ The API that LibreChat exchanges the user's token for (on-behalf-of). Each MCP s
 
 ### PressRoom-Portal
 
-- Platform: Web, redirect `https://portal.pressroom.<domain>/auth/callback`.
+- Platform: Web, redirect `https://portal.pressroom.<domain>/auth/callback`. Sign-in only (`openid profile`), PKCE.
 - Delegated Graph `User.Read`.
+- Certificates & secrets: new client secret. `npm run secrets` stores it as `/pressroom/secrets/portal-client-secret`; the client id goes to `/pressroom/config/portal-client-id`.
+- Enterprise application > Properties: **Assignment required = Yes**, and assign the same people as LibreChat.
 
 ## 5. Role assignments
 
