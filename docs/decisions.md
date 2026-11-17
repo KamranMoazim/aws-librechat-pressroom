@@ -21,3 +21,6 @@ Defaults this build ships with, and what the client needs to confirm.
 | 15 | Read-aloud and dictation | Read-aloud text goes to ElevenLabs, dictated audio to OpenAI | Both send content to a vendor; browser engines are the no-vendor option |
 | 16 | LibreChat's page CSP | On, report-only (`CSP_REPORT_ONLY=true`); framing is enforced by nginx on every chat response | LibreChat advises report-only first; switch to enforcing after a week with no violations in the browser console |
 | 17 | Who may frame the chat | `'self'` and `https://portal.pressroom.<domain>` only | Each extra app that embeds the chat must be on the same registrable domain and added here |
+| 18 | Backup retention | restic: 14 daily, 8 weekly, 12 monthly, last 5 pre-update; bucket Object Lock 30 days | Their backup policy and target (S3, NAS, Azure Blob) |
+| 19 | Log retention | LibreChat logs 90 days, container logs 30 days (CloudWatch) | Their logging rules or SIEM |
+| 20 | Alarms on missing data | Not alarming (build server is paused often) | Always-on server: alarm when backup age or container health stops reporting |

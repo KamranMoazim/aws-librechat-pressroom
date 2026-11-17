@@ -1,0 +1,10 @@
+[Unit]
+Description=Nightly PressRoom backup (databases, files, encrypted .env) to restic
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+Environment=HOME=/root RESTIC_CACHE_DIR=/var/cache/restic
+TimeoutStartSec=4h
+ExecStart=/opt/pressroom/server/bin/backup.sh

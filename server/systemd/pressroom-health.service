@@ -1,0 +1,9 @@
+[Unit]
+Description=Publish PressRoom health metrics (backup age, certificate, containers)
+After=docker.service
+
+[Service]
+Type=oneshot
+Environment=HOME=/root RESTIC_CACHE_DIR=/var/cache/restic
+TimeoutStartSec=2min
+ExecStart=/opt/pressroom/server/bin/health-metrics.sh

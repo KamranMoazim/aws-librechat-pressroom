@@ -117,6 +117,14 @@ Runbook: [docs/runbooks/relevance-voice-egress.md](docs/runbooks/relevance-voice
 
 Runbook and developer handover: [docs/runbooks/portal-embed.md](docs/runbooks/portal-embed.md).
 
+## Phase 7: operations
+
+- Nightly restic backup (Mongo, pgvector, approved actions, files, config, certificates, `.env` encrypted with age) to the Object Lock bucket in us-west-2; `bin/restore.sh` brings it back onto a fresh stack and runs the smoke checks.
+- `bin/update.sh`: pre-update backup, pull pinned digests, smoke checks, rollback steps. `npm run image:digest` resolves digests without pulling.
+- CloudWatch agent (disk, memory, logs), container health checks and a 5-minute health timer feed seven alarms that email IT.
+
+Runbooks: [backup-and-restore](docs/runbooks/backup-and-restore.md), [update](docs/runbooks/update.md) (with the prepared v0.8.9 exercise), [monitoring](docs/runbooks/monitoring.md), [day-2](docs/runbooks/day-2.md).
+
 ## Cost
 
 | Line | Per hour |

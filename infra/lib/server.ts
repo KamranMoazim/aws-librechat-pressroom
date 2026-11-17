@@ -7,6 +7,8 @@ import { BACKUP_REGION, SNAPSHOT_TAG, SSM_PREFIX, VPC_CIDR, backupBucketName } f
 export interface ServerProps {
   vpc: ec2.IVpc;
   publicZoneId: string;
+  name?: string;
+  dailySnapshots?: boolean;
 }
 
 export const UBUNTU_AMI_PARAMETER =
@@ -108,8 +110,10 @@ export class Server extends Construct {
         },
       ],
     });
-    Tags.of(this.instance).add('Name', 'pressroom-srv');
-    Tags.of(this.instance).add(SNAPSHOT_TAG.key, SNAPSHOT_TAG.value);
+    Tags.of(this.instance).add('Name', props.name ?? 'pressroom-srv');
+    if (props.dailySnapshots ?? true) {
+      Tags.of(this.instance).add(SNAPSHOT_TAG.key, SNAPSHOT_TAG.value);
+    }
     Tags.of(this.instance).add('pressroom-backup-region', BACKUP_REGION);
   }
 }

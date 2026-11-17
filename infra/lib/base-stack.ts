@@ -4,6 +4,7 @@ import { Budget } from './budget.js';
 import { Deploy } from './deploy.js';
 import { Dns } from './dns.js';
 import { DnsFirewall } from './dns-firewall.js';
+import { Monitoring } from './monitoring.js';
 import { Network } from './network.js';
 import { Schedules } from './schedules.js';
 import { Server } from './server.js';
@@ -37,6 +38,19 @@ export class BaseStack extends Stack {
     new Budget(this, 'Budget', { alertEmail: props.alertEmail });
     const deploy = new Deploy(this, 'Deploy');
     new Schedules(this, 'Schedules', { instance: this.server.instance });
+    new Monitoring(this, 'Monitoring', {
+      instance: this.server.instance,
+      alertEmail: props.alertEmail,
+    });
+    if (this.node.tryGetContext('restore') === 'true') {
+      const drill = new Server(this, 'RestoreServer', {
+        vpc: this.network.vpc,
+        publicZoneId: props.publicZoneId,
+        name: 'pressroom-restore',
+        dailySnapshots: false,
+      });
+      new CfnOutput(this, 'RestoreInstanceId', { value: drill.instance.instanceId });
+    }
 
     new CfnOutput(this, 'InstanceId', { value: this.server.instance.instanceId });
     new CfnOutput(this, 'PrivateIp', { value: this.server.instance.instancePrivateIp });

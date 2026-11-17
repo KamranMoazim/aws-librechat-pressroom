@@ -7,6 +7,7 @@ cdk-outputs.json
 .DS_Store
 PLAN*.md
 infra/vpn/
+infra/backup-key/
 cdk.context.json
 Progress.md
 server/.env

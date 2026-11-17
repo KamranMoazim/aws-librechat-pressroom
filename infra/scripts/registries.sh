@@ -6,7 +6,8 @@ DOMAINS=(
   ports.ubuntu.com '*.ports.ubuntu.com' '*.archive.ubuntu.com' security.ubuntu.com
   download.docker.com registry-1.docker.io auth.docker.io '*.docker.io' production.cloudflare.docker.com
   registry.librechat.ai ghcr.io pkg-containers.githubusercontent.com
-  awscli.amazonaws.com
+  awscli.amazonaws.com amazoncloudwatch-agent.s3.amazonaws.com
+  github.com release-assets.githubusercontent.com objects.githubusercontent.com
   pypi.org files.pythonhosted.org registry.npmjs.org
 )
 

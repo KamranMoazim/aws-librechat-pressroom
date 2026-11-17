@@ -302,6 +302,115 @@ check(
   sessionOf('AWS::EC2::ClientVpnTargetNetworkAssociation').length === 1,
 );
 
+const alarms = Object.fromEntries(
+  baseOf('AWS::CloudWatch::Alarm').map((alarm) => [alarm.Properties.AlarmName, alarm.Properties]),
+);
+const alarmShape = (name: string) => {
+  const alarm = alarms[name] ?? {};
+  return {
+    metric: `${alarm.Namespace}/${alarm.MetricName}`,
+    threshold: alarm.Threshold,
+    operator: alarm.ComparisonOperator,
+    periods: alarm.EvaluationPeriods,
+  };
+};
+check(
+  'alarms: disk 80, backup 26 h, cert 14 days, restarts, unhealthy, memory, status check',
+  json([
+    alarmShape('pressroom-disk'),
+    alarmShape('pressroom-backup-age'),
+    alarmShape('pressroom-cert-expiry'),
+    alarmShape('pressroom-api-restarts'),
+    alarmShape('pressroom-unhealthy'),
+    alarmShape('pressroom-memory'),
+    alarmShape('pressroom-status-check'),
+  ]) ===
+    json([
+      {
+        metric: 'CWAgent/disk_used_percent',
+        threshold: 80,
+        operator: 'GreaterThanThreshold',
+        periods: 2,
+      },
+      {
+        metric: 'PressRoom/BackupAgeHours',
+        threshold: 26,
+        operator: 'GreaterThanThreshold',
+        periods: 1,
+      },
+      {
+        metric: 'PressRoom/CertDaysLeft',
+        threshold: 14,
+        operator: 'LessThanThreshold',
+        periods: 1,
+      },
+      {
+        metric: 'PressRoom/ApiRestarts',
+        threshold: 0,
+        operator: 'GreaterThanThreshold',
+        periods: 1,
+      },
+      {
+        metric: 'PressRoom/UnhealthyContainers',
+        threshold: 0,
+        operator: 'GreaterThanThreshold',
+        periods: 3,
+      },
+      {
+        metric: 'CWAgent/mem_used_percent',
+        threshold: 90,
+        operator: 'GreaterThanThreshold',
+        periods: 3,
+      },
+      {
+        metric: 'AWS/EC2/StatusCheckFailed',
+        threshold: 0,
+        operator: 'GreaterThanThreshold',
+        periods: 2,
+      },
+    ]),
+  alarms,
+);
+check(
+  'every alarm notifies the alerts topic on alarm and on ok',
+  Object.values(alarms).length === 7 &&
+    Object.values(alarms).every(
+      (alarm: any) => alarm.AlarmActions?.length === 1 && alarm.OKActions?.length === 1,
+    ),
+);
+check(
+  'alarms are scoped to the server instance',
+  Object.values(alarms).every((alarm: any) =>
+    (alarm.Dimensions ?? []).some((dimension: any) => dimension.Name === 'InstanceId'),
+  ),
+);
+const subscriptions = baseOf('AWS::SNS::Subscription');
+check(
+  'alerts go to the alert email',
+  subscriptions.length === 1 &&
+    subscriptions[0].Properties.Protocol === 'email' &&
+    subscriptions[0].Properties.Endpoint === 'alerts@example.com',
+  subscriptions,
+);
+check('no restore drill instance by default', baseOf('AWS::EC2::Instance').length === 1);
+
+const drillApp = new App({ context: { restore: 'true' } });
+const drillBase = new BaseStack(drillApp, 'TestDrill', {
+  env: { account: ACCOUNT, region: 'us-east-1' },
+  domain: 'example.com',
+  publicZoneId: PUBLIC_ZONE_ID,
+  alertEmail: 'alerts@example.com',
+});
+const drillInstances = resourcesOf(Template.fromStack(drillBase))('AWS::EC2::Instance');
+const tagsOf = (resource: any) =>
+  Object.fromEntries((resource.Properties.Tags ?? []).map((tag: any) => [tag.Key, tag.Value]));
+const drill = drillInstances.find((resource) => tagsOf(resource).Name === 'pressroom-restore');
+check(
+  'restore=true adds a pressroom-restore instance without daily snapshots',
+  drillInstances.length === 2 && drill !== undefined && !('pressroom-backup' in tagsOf(drill)),
+  drillInstances.map(tagsOf),
+);
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) {
   process.exit(1);

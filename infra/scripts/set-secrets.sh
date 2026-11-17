@@ -90,6 +90,7 @@ generate openid-session-secret 32
 generate pace-api-key 32
 generate audit-admin-password 24
 generate audit-writer-password 24
+generate restic-password 32
 
 config domain "$(try_env DOMAIN)"
 config acme-email "$(try_env ALERT_EMAIL)"
@@ -97,6 +98,7 @@ config entra-tenant-id "$(try_env ENTRA_TENANT_ID)"
 config openid-client-id "$(try_env OPENID_CLIENT_ID)"
 config mcp-client-id "$(try_env MCP_CLIENT_ID)"
 config portal-client-id "$(try_env PORTAL_CLIENT_ID)"
+config backup-age-recipient "$(try_env BACKUP_AGE_RECIPIENT)"
 config sharepoint-tenant "$(try_env SHAREPOINT_TENANT)"
 config relevance-region "$(try_env RELEVANCE_REGION)"
 config relevance-project-id "$(try_env RELEVANCE_PROJECT_ID)"

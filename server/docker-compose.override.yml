@@ -1,6 +1,18 @@
 services:
   api:
     image: registry.librechat.ai/librechat-ai/librechat-api:v0.8.8@sha256:9cde97da2b504adc90b8b01b606697f1fd6d71e2152345060133c7b41bfabc21
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3080/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     ports: !reset []
     depends_on:
       - mcp-outlook
@@ -30,6 +42,12 @@ services:
 
   mongodb:
     image: mongo:8.0.20@sha256:098862b1339f031900ca66cf8fef799e616d6324fa41b9a263f2ec899552c1ef
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.runCommand({ ping: 1 }).ok']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     command: mongod
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
@@ -44,6 +62,11 @@ services:
 
   vectordb:
     image: pgvector/pgvector:0.8.0-pg15-trixie@sha256:8809cfffff0082cf260c9ac752f1dd1afc77f6f0a55c4e6411321e78efc3d9a5
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -63,6 +86,18 @@ services:
       args:
         SERVER: outlook
     image: pressroom/mcp-outlook:local
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:8101/healthz').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     container_name: mcp-outlook
     restart: always
     read_only: true
@@ -83,6 +118,18 @@ services:
       args:
         SERVER: pace
     image: pressroom/mcp-pace:local
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:8102/healthz').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     container_name: mcp-pace
     restart: always
     read_only: true
@@ -105,6 +152,18 @@ services:
       args:
         SERVER: relevance
     image: pressroom/mcp-relevance:local
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:8103/healthz').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     container_name: mcp-relevance
     restart: always
     read_only: true
@@ -130,6 +189,18 @@ services:
       args:
         SERVER: voice
     image: pressroom/mcp-voice:local
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:8104/healthz').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     container_name: mcp-voice
     restart: always
     read_only: true
@@ -152,6 +223,18 @@ services:
     build:
       context: ../mocks/portal
     image: pressroom/portal:local
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/healthz').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     container_name: portal
     restart: always
     read_only: true
@@ -168,6 +251,17 @@ services:
     build:
       context: ../mocks/pace-api
     image: pressroom/pace-api:local
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:8200/healthz', timeout=3)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     container_name: pace-api
     restart: always
     read_only: true
@@ -178,6 +272,11 @@ services:
 
   auditdb:
     image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d audit']
+      interval: 30s
+      timeout: 5s
+      retries: 3
     container_name: auditdb
     restart: always
     environment:

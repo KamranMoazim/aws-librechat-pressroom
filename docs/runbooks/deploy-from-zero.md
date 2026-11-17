@@ -8,6 +8,7 @@ On the client's own server, skip the laptop steps that touch AWS: copy `server/`
 
 ```bash
 npm run secrets                 # generates every secret in SSM, asks for the Entra client secret and provider keys
+npm run backup:key              # once: age key for the encrypted .env in backups (private half stays on the laptop)
 ```
 
 It never replaces an existing secret. `CREDS_KEY` and `CREDS_IV` in particular must never change: LibreChat encrypts stored credentials with them.
@@ -31,7 +32,8 @@ docker compose pull --ignore-buildable
 docker compose build
 docker compose up -d
 docker compose ps
-bin/install-timers.sh           # hourly approved-action export
+bin/smoke.sh                    # every container healthy, LibreChat answers through nginx
+bin/install-timers.sh           # approved-action export (hourly), backup (nightly), health metrics (5 min)
 ```
 
 ## 4. Close egress (laptop)
@@ -52,6 +54,12 @@ docker compose exec api npm run create-user -- breakglass@<domain> "Break Glass"
 ```
 
 It prompts for a password. Store it in the client's password vault.
+
+Then take the first backup, so the backup-age alarm starts green (`backup.sh` refuses to back up a LibreChat with no users):
+
+```bash
+sudo bin/backup.sh
+```
 
 ## 6. Admin panel grants
 
