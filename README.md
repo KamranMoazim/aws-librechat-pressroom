@@ -144,3 +144,7 @@ Runbooks: [backup-and-restore](docs/runbooks/backup-and-restore.md), [update](do
 Paused: about $8/month. Left fully running: about $165/month; the budget alert fires at $20 actual and $25 forecast.
 
 `npm run teardown` removes everything except the Object Lock backup bucket and the VPN certificate.
+
+## License
+
+MIT, see [LICENSE](LICENSE). `server/docker-compose.yml` is LibreChat's MIT-licensed `deploy-compose.yml`; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
