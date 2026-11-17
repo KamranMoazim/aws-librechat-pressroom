@@ -126,6 +126,13 @@ check(
     !putResources.includes('"*"'),
   putResources,
 );
+const retentionResources = json(allowing('s3:PutObjectRetention').map((s: any) => s.Resource));
+check(
+  'server may set object lock retention only in the backup bucket',
+  retentionResources.includes(`pressroom-backup-${ACCOUNT}-us-west-2/*`) &&
+    !retentionResources.includes('"*"'),
+  retentionResources,
+);
 const changeResources = json(
   allowing('route53:ChangeResourceRecordSets').map((s: any) => s.Resource),
 );

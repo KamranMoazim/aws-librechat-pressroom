@@ -14,3 +14,5 @@ Defaults this build ships with, and what the client needs to confirm.
 | 8 | Per-person limit | $20 per month, refilled to $20 (no rollover) | Budget per person and who gets more |
 | 9 | Shared links | Inside the company only (`public: false`) | Whether anyone outside may open a shared chat |
 | 10 | Models | Claude Sonnet 5.5, Claude Opus 5.5, GPT-6 Sol, Grok 4.7 | Which models are approved |
+| 11 | Approved-action records | Kept 7 years: append-only table on the server, hourly export with Object Lock | Their retention rule for action records |
+| 12 | Restricted Pace customers | Visible only to `Pace.Estimating` | Which customers are restricted and who may see them |

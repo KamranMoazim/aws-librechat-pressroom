@@ -19,7 +19,8 @@ COPYFILE_DISABLE=1 tar -czf "$archive" -C .. \
   --exclude 'server/.env' --exclude 'server/librechat.yaml' --exclude 'server/data-node' \
   --exclude 'server/meili_data_*' --exclude 'server/images' --exclude 'server/uploads' \
   --exclude 'server/logs' --exclude 'server/skill' --exclude 'server/reports/out' \
-  --exclude 'node_modules' --exclude 'mcp/dist' --exclude '.DS_Store' server mcp
+  --exclude 'node_modules' --exclude 'mcp/dist' --exclude '.venv' --exclude '__pycache__' \
+  --exclude 'server/state' --exclude '.DS_Store' server mcp mocks
 key="server/$(date -u +%Y%m%dT%H%M%SZ).tgz"
 aws s3 cp --region "$REGION" "$archive" "s3://$bucket/$key" >/dev/null
 rm -f "$archive"

@@ -64,7 +64,7 @@ export class Server extends Construct {
     );
     this.role.addToPolicy(
       new iam.PolicyStatement({
-        actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'],
+        actions: ['s3:GetObject', 's3:PutObject', 's3:PutObjectRetention', 's3:DeleteObject'],
         resources: [`${bucketArn}/*`],
       }),
     );

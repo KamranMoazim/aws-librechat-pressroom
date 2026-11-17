@@ -5,6 +5,7 @@ import type { ActionRecorder } from '../shared/audit.js';
 import type { Caller } from '../shared/auth.js';
 import type { RequestContext } from '../shared/http.js';
 import { OboError } from '../shared/obo.js';
+import { errorResult as failure, jsonResult as text, notPermitted } from '../shared/results.js';
 import { GraphError, type GraphFetch } from './graph.js';
 
 export const OUTLOOK_ROLE = 'Outlook.Assistant';
@@ -24,14 +25,6 @@ export interface OutlookDeps {
   context: RequestContext;
   graph: GraphFetch;
   recorder: ActionRecorder;
-}
-
-function text(value: unknown): CallToolResult {
-  return { content: [{ type: 'text', text: JSON.stringify(value, null, 2) }] };
-}
-
-function failure(message: string): CallToolResult {
-  return { isError: true, content: [{ type: 'text', text: message }] };
 }
 
 function describeError(error: unknown): string {
@@ -59,16 +52,14 @@ function permitted(caller: Caller): boolean {
   return caller.roles.includes(OUTLOOK_ROLE);
 }
 
-const NOT_PERMITTED = `Not permitted: your account does not have the ${OUTLOOK_ROLE} role. Ask IT if you need it.`;
-
 export function buildOutlookServer(deps: OutlookDeps): McpServer {
   const server = new McpServer({ name: 'pressroom-outlook', version: '0.1.0' });
   const { caller, graph } = deps;
 
-  const guarded = <Args>(handler: (args: Args) => Promise<CallToolResult>) => {
+  const guarded = <Args>(tool: string, handler: (args: Args) => Promise<CallToolResult>) => {
     return async (args: Args): Promise<CallToolResult> => {
       if (!permitted(caller)) {
-        return failure(NOT_PERMITTED);
+        return notPermitted('outlook', tool, caller, OUTLOOK_ROLE);
       }
       try {
         return await handler(args);
@@ -89,7 +80,7 @@ export function buildOutlookServer(deps: OutlookDeps): McpServer {
       },
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
-    guarded(async ({ query, top }) => {
+    guarded('mail_search', async ({ query, top }) => {
       const search = encodeURIComponent(`"${query.replace(/["\\]/g, ' ')}"`);
       const result = await graph(
         `/me/messages?$search=${search}&$top=${top}&$select=${LIST_FIELDS}`,
@@ -114,7 +105,7 @@ export function buildOutlookServer(deps: OutlookDeps): McpServer {
       inputSchema: { messageId: z.string().min(1).max(512) },
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
-    guarded(async ({ messageId }) => {
+    guarded('mail_get', async ({ messageId }) => {
       const message = await graph(
         `/me/messages/${encodeURIComponent(messageId)}?$select=${MESSAGE_FIELDS}`,
         { headers: { Prefer: 'outlook.body-content-type="text"' } },
@@ -147,7 +138,7 @@ export function buildOutlookServer(deps: OutlookDeps): McpServer {
       },
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
-    guarded(async ({ start, end }) => {
+    guarded('calendar_view', async ({ start, end }) => {
       const span = Date.parse(end) - Date.parse(start);
       if (!(span > 0) || span > MAX_CALENDAR_DAYS * 24 * 3600 * 1000) {
         return failure(`end must be after start and at most ${MAX_CALENDAR_DAYS} days later.`);
@@ -193,7 +184,7 @@ export function buildOutlookServer(deps: OutlookDeps): McpServer {
         openWorldHint: false,
       },
     },
-    guarded(async ({ messageId, comment, replyAll }) => {
+    guarded('draft_reply', async ({ messageId, comment, replyAll }) => {
       const action = replyAll ? 'createReplyAll' : 'createReply';
       const base = {
         userOid: caller.oid,

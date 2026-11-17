@@ -1,0 +1,60 @@
+{
+  "description": "Expected result of every Pace tool for every role. allow = the tool runs; deny = 'Not permitted' for a missing role; error = the tool runs but refuses the input.",
+  "personas": {
+    "user": [],
+    "estimator": ["Pace.Estimating"],
+    "production": ["Pace.Production"]
+  },
+  "costFields": ["estimatedCost", "quotedPrice", "marginPct"],
+  "cases": [
+    {
+      "name": "search jobs",
+      "tool": "job_search",
+      "args": { "query": "", "limit": 25 },
+      "expect": { "user": "allow", "estimator": "allow", "production": "allow" },
+      "noRestrictedJobsFor": ["user", "production"],
+      "costFieldsAbsentFor": ["user", "estimator", "production"]
+    },
+    {
+      "name": "read an open job",
+      "tool": "job_get",
+      "args": { "jobNumber": "{{openJob}}" },
+      "expect": { "user": "allow", "estimator": "allow", "production": "allow" },
+      "costFieldsAbsentFor": ["user", "production"],
+      "costFieldsPresentFor": ["estimator"]
+    },
+    {
+      "name": "read a restricted job",
+      "tool": "job_get",
+      "args": { "jobNumber": "{{restrictedJob}}" },
+      "expect": { "user": "deny", "estimator": "allow", "production": "deny" }
+    },
+    {
+      "name": "read an estimate",
+      "tool": "estimate_get",
+      "args": { "jobNumber": "{{openJob}}" },
+      "expect": { "user": "deny", "estimator": "allow", "production": "deny" }
+    },
+    {
+      "name": "prepare a note on an open job",
+      "tool": "job_update_prepare",
+      "args": { "jobNumber": "{{openJob}}", "note": "Permission matrix check, not committed" },
+      "expect": { "user": "deny", "estimator": "deny", "production": "allow" }
+    },
+    {
+      "name": "prepare a change on a restricted job",
+      "tool": "job_update_prepare",
+      "args": {
+        "jobNumber": "{{restrictedJob}}",
+        "note": "Permission matrix check, not committed"
+      },
+      "expect": { "user": "deny", "estimator": "deny", "production": "deny" }
+    },
+    {
+      "name": "commit an unknown change",
+      "tool": "job_update_commit",
+      "args": { "changeId": "chg_00000000000000000000000000000000" },
+      "expect": { "user": "deny", "estimator": "deny", "production": "error" }
+    }
+  ]
+}

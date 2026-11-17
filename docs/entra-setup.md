@@ -76,7 +76,7 @@ Enterprise applications > PressRoom-MCP > Users and groups:
 
 | User | Roles |
 | --- | --- |
-| alice | Pace.Estimating, Outlook.Assistant |
+| alice | Pace.Estimating, Pace.Production, Outlook.Assistant |
 | dave | Outlook.Assistant |
 
 Set **Assignment required? = Yes** on PressRoom-LibreChat so eve is refused by Entra as well as by LibreChat's role check. Leave it **No** on PressRoom-MCP, so bob can still get an MCP token and receive a clean "not permitted" from the server instead of a sign-in error.

@@ -4,6 +4,7 @@ services:
     ports: !reset []
     depends_on:
       - mcp-outlook
+      - mcp-pace
     environment:
       - MONGO_URI=mongodb://librechat:${MONGO_APP_PASSWORD}@mongodb:27017/LibreChat?authSource=LibreChat
       - ADMIN_PANEL_URL=https://admin.pressroom.${DOMAIN}
@@ -63,8 +64,61 @@ services:
     read_only: true
     cap_drop: [ALL]
     security_opt: ['no-new-privileges:true']
+    depends_on:
+      - auditdb
     environment:
       - PORT=8101
       - ENTRA_TENANT_ID=${ENTRA_TENANT_ID}
       - MCP_CLIENT_ID=${MCP_CLIENT_ID}
       - MCP_CLIENT_SECRET=${MCP_CLIENT_SECRET}
+      - AUDIT_DATABASE_URL=postgres://audit_writer:${AUDIT_WRITER_PASSWORD}@auditdb:5432/audit
+
+  mcp-pace:
+    build:
+      context: ../mcp
+      args:
+        SERVER: pace
+    image: pressroom/mcp-pace:local
+    container_name: mcp-pace
+    restart: always
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    depends_on:
+      - auditdb
+      - pace-api
+    environment:
+      - PORT=8102
+      - ENTRA_TENANT_ID=${ENTRA_TENANT_ID}
+      - MCP_CLIENT_ID=${MCP_CLIENT_ID}
+      - PACE_API_URL=http://pace-api:8200
+      - PACE_API_KEY=${PACE_API_KEY}
+      - AUDIT_DATABASE_URL=postgres://audit_writer:${AUDIT_WRITER_PASSWORD}@auditdb:5432/audit
+
+  pace-api:
+    build:
+      context: ../mocks/pace-api
+    image: pressroom/pace-api:local
+    container_name: pace-api
+    restart: always
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    environment:
+      - PACE_API_KEY=${PACE_API_KEY}
+
+  auditdb:
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    container_name: auditdb
+    restart: always
+    environment:
+      - POSTGRES_USER=audit_admin
+      - POSTGRES_PASSWORD=${AUDIT_ADMIN_PASSWORD}
+      - POSTGRES_DB=audit
+      - AUDIT_WRITER_PASSWORD=${AUDIT_WRITER_PASSWORD}
+    volumes:
+      - ./auditdb/init:/docker-entrypoint-initdb.d:ro
+      - auditdata:/var/lib/postgresql/data
+
+volumes:
+  auditdata:

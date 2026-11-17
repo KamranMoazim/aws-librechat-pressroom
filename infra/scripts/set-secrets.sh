@@ -72,6 +72,9 @@ generate mongo-app-password 24
 generate postgres-password 24
 generate admin-panel-session-secret 32
 generate openid-session-secret 32
+generate pace-api-key 32
+generate audit-admin-password 24
+generate audit-writer-password 24
 
 config domain "$(try_env DOMAIN)"
 config acme-email "$(try_env ALERT_EMAIL)"

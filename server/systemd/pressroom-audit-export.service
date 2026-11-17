@@ -1,0 +1,8 @@
+[Unit]
+Description=Export new PressRoom approved actions to the Object Lock bucket
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/pressroom/server/bin/audit-export.sh

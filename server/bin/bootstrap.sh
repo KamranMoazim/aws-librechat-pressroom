@@ -31,7 +31,7 @@ then
   rm -rf "$workdir"
 fi
 
-install -m 0750 -d /opt/pressroom /opt/pressroom/server /opt/pressroom/mcp
+install -m 0750 -d /opt/pressroom /opt/pressroom/server /opt/pressroom/mcp /opt/pressroom/mocks
 docker --version
 docker compose version
 aws --version

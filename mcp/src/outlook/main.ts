@@ -1,8 +1,8 @@
-import { logRecorder } from '../shared/audit.js';
 import { createVerifier } from '../shared/auth.js';
 import { createMcpApp } from '../shared/http.js';
 import { log } from '../shared/log.js';
 import { createOboExchanger } from '../shared/obo.js';
+import { createRecorder } from '../shared/recorder.js';
 import { createGraphFetch } from './graph.js';
 import { buildOutlookServer } from './tools.js';
 
@@ -27,6 +27,8 @@ const verify = createVerifier({
   requiredScope: 'Mcp.Tools',
 });
 
+const recorder = createRecorder(process.env.AUDIT_DATABASE_URL);
+
 const app = createMcpApp({
   name: 'outlook',
   verify,
@@ -34,7 +36,7 @@ const app = createMcpApp({
     buildOutlookServer({
       caller,
       context,
-      recorder: logRecorder,
+      recorder,
       graph: createGraphFetch(() => exchange(caller, ['https://graph.microsoft.com/.default'])),
     }),
 });

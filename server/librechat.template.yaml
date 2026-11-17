@@ -89,8 +89,13 @@ endpoints:
         - 'mcp:outlook:mail_search'
         - 'mcp:outlook:mail_get'
         - 'mcp:outlook:calendar_view'
+        - 'mcp:pace:job_search'
+        - 'mcp:pace:job_get'
+        - 'mcp:pace:estimate_get'
+        - 'mcp:pace:job_update_prepare'
       ask:
         - 'mcp:outlook:draft_reply'
+        - 'mcp:pace:job_update_commit'
       reason: 'Check {tool} before it runs.'
     checkpointer:
       type: 'mongo'
@@ -99,6 +104,7 @@ endpoints:
 mcpSettings:
   allowedAddresses:
     - 'mcp-outlook:8101'
+    - 'mcp-pace:8102'
 
 mcpServers:
   outlook:
@@ -106,6 +112,17 @@ mcpServers:
     description: 'Search and read your mail, view your calendar, and save reply drafts (never sends)'
     type: streamable-http
     url: 'http://mcp-outlook:8101/mcp'
+    startup: false
+    timeout: 60000
+    obo:
+      scopes: 'api://@@MCP_CLIENT_ID@@/Mcp.Tools'
+    requestHeaders:
+      X-Conversation-Id: '{{LIBRECHAT_BODY_CONVERSATIONID}}'
+  pace:
+    title: 'Pace'
+    description: 'Look up jobs and estimates; status, due date and note changes need your approval'
+    type: streamable-http
+    url: 'http://mcp-pace:8102/mcp'
     startup: false
     timeout: 60000
     obo:

@@ -18,12 +18,17 @@ server/         what goes on the client's server, unchanged
   librechat.template.yaml      rendered to librechat.yaml; @@NAME@@ filled from /pressroom/config only
   nginx/templates/             chat., admin., bundler. server blocks (TLS from Let's Encrypt)
   mongo/init/                  creates the app user (readWrite on LibreChat only)
+  auditdb/init/                approved_actions table, append-only trigger, audit_writer role
+  systemd/                     hourly approved-action export timer
   reports/                     spend report and transaction purge (mongosh)
   bin/                         bootstrap, render-env, certs, check-models, spend-report
   test/                        render-env, MongoDB (auth + spend report) and config schema tests
 mcp/            MCP servers (TypeScript, streamable HTTP, one image per server)
   src/shared/   token check, on-behalf-of exchange, approved-action recorder, HTTP host
   src/outlook/  Outlook tools: mail_search, mail_get, calendar_view, draft_reply
+  src/pace/     Pace tools: job_search, job_get, estimate_get, job_update_prepare, job_update_commit
+mocks/pace-api/ FastAPI stand-in for EFI Pace (200 seeded jobs)
+tests/pace-permissions/  tool x role matrix, runnable against the client's own connector
 docs/           entra-setup.md, decisions.md, runbooks/
 ```
 
@@ -87,6 +92,14 @@ Runbook: [docs/runbooks/models-and-spend.md](docs/runbooks/models-and-spend.md).
 - `draft_reply` needs approval in the chat and writes an approved-action record.
 
 Runbook: [docs/runbooks/microsoft-connections.md](docs/runbooks/microsoft-connections.md).
+
+## Phase 4: Pace connector and approved actions
+
+- `mcp-pace` reads jobs and estimates with redaction by role, and changes them only through `job_update_prepare` then `job_update_commit` (one use, same person, 10 minutes, version-checked, approval in the chat).
+- Every committed or failed action goes to an append-only Postgres table, and every hour to the Object Lock bucket for 7 years.
+- `tests/pace-permissions/matrix.json` is the tool x role contract; the same file runs in-process and against a deployed connector.
+
+Runbook: [docs/runbooks/pace-and-approved-actions.md](docs/runbooks/pace-and-approved-actions.md).
 
 ## Cost
 
