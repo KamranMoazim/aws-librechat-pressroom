@@ -7,7 +7,7 @@ On the client's own server, skip the laptop steps that touch AWS: copy `server/`
 ## 1. Secrets and settings (laptop, once)
 
 ```bash
-npm run secrets                 # generates every secret in SSM, asks for the Entra client secret
+npm run secrets                 # generates every secret in SSM, asks for the Entra client secret and provider keys
 ```
 
 It never replaces an existing secret. `CREDS_KEY` and `CREDS_IV` in particular must never change: LibreChat encrypts stored credentials with them.
@@ -26,6 +26,7 @@ npm run push-server             # copies server/ to /opt/pressroom
 bin/bootstrap.sh                # docker, compose, aws cli, certbot
 bin/render-env.sh               # .env from /pressroom/* (mode 600)
 bin/certs.sh                    # Let's Encrypt via Route 53 DNS-01; CERTS_STAGING=1 for a dry run
+bin/check-models.sh             # every model in modelSpecs exists for our keys
 docker compose pull
 docker compose up -d
 docker compose ps

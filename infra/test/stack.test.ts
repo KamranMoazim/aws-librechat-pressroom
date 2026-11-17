@@ -234,6 +234,24 @@ check(
   allowed,
 );
 
+const [spendSchedule] = baseOf('AWS::Scheduler::Schedule');
+const scheduleProps = spendSchedule?.Properties ?? {};
+check(
+  'monthly spend report runs the server script via ssm',
+  scheduleProps.ScheduleExpression === 'cron(0 6 1 * ? *)' &&
+    scheduleProps.Target?.Arn === 'arn:aws:scheduler:::aws-sdk:ssm:sendCommand' &&
+    json(scheduleProps.Target?.Input).includes('/opt/pressroom/bin/spend-report.sh'),
+  scheduleProps,
+);
+const sendCommand = json(allowing('ssm:SendCommand').map((s: any) => s.Resource));
+check(
+  'scheduler may only run AWS-RunShellScript on the server',
+  sendCommand.includes('document/AWS-RunShellScript') &&
+    sendCommand.includes('instance/') &&
+    !sendCommand.includes('"*"'),
+  sendCommand,
+);
+
 const sessionOf = resourcesOf(Template.fromStack(session));
 check('session has one nat gateway', sessionOf('AWS::EC2::NatGateway').length === 1);
 const routes = sessionOf('AWS::EC2::Route');

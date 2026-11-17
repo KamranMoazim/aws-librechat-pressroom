@@ -3,10 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "install:all": "npm --prefix infra install",
+    "install:all": "npm --prefix infra install && npm --prefix server/test/config install",
     "typecheck": "npm --prefix infra run typecheck",
     "infra:test": "npm --prefix infra test",
-    "server:test": "server/test/render-env.test.sh",
+    "server:test": "server/test/render-env.test.sh && server/test/mongo.test.sh",
+    "config:check": "npm --prefix server/test/config run --silent check",
     "infra:synth": "npm --prefix infra run synth",
     "format": "npx prettier@3.6.2 --write infra/bin infra/lib infra/test server/librechat.yaml server/docker-compose.override.yml",
     "secrets": "infra/scripts/set-secrets.sh",
@@ -14,6 +15,7 @@
     "registries": "infra/scripts/registries.sh",
     "session:up": "infra/scripts/session-up.sh",
     "push-server": "infra/scripts/push-server.sh",
+    "spend:report": "infra/scripts/spend-report.sh",
     "pause": "infra/scripts/pause.sh",
     "teardown": "infra/scripts/teardown.sh"
   }

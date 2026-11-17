@@ -18,3 +18,4 @@ server/images
 server/uploads
 server/logs
 server/skill
+server/reports/out

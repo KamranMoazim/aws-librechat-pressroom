@@ -18,8 +18,10 @@ server/         what goes on the client's server, unchanged
   librechat.yaml
   nginx/templates/             chat., admin., bundler. server blocks (TLS from Let's Encrypt)
   mongo/init/                  creates the app user (readWrite on LibreChat only)
-  bin/                         bootstrap, render-env, certs
-docs/           entra-setup.md, runbooks/
+  reports/                     spend report and transaction purge (mongosh)
+  bin/                         bootstrap, render-env, certs, check-models, spend-report
+  test/                        render-env, MongoDB (auth + spend report) and config schema tests
+docs/           entra-setup.md, decisions.md, runbooks/
 ```
 
 ## Stacks
@@ -64,6 +66,16 @@ Done when:
 Follow [docs/runbooks/deploy-from-zero.md](docs/runbooks/deploy-from-zero.md). Done when alice signs in through Entra with MFA, eve is refused, carol reaches the admin panel, and the email login form is gone.
 
 Only nginx publishes a port. MongoDB runs with auth and LibreChat connects as an app user; Meilisearch runs in production mode; debug logging is off so prompts don't land in log files.
+
+## Phase 2: models, limits, spend, retention
+
+- Four enforced model specs (Claude everyday, Claude deep, GPT analysis, Grok research) plus shared agents; users cannot pick other models, set parameters or add keys.
+- $20 per person per month through LibreChat's balance; refills replace the balance.
+- Monthly spend CSV per person and model (`server/reports/spend-report.js`), written to the Object Lock bucket by an EventBridge schedule; transactions older than 13 months are purged.
+- Retention: everything expires 90 days after last activity, temporary chats after 24 h; memories, Code Interpreter, web search and agent actions are off. See [docs/decisions.md](docs/decisions.md).
+- `npm run config:check` validates `librechat.yaml` against LibreChat's own schema and fails on keys it would ignore.
+
+Runbook: [docs/runbooks/models-and-spend.md](docs/runbooks/models-and-spend.md).
 
 ## Cost
 

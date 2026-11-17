@@ -3,3 +3,99 @@ cache: true
 
 registration:
   socialLogins: ['openid']
+
+interface:
+  modelSelect: true
+  parameters: false
+  presets: false
+  contextUsage: true
+  contextCost: true
+  webSearch: false
+  runCode: false
+  memories: false
+  marketplace:
+    use: false
+  agents:
+    use: true
+    create: true
+    share: true
+    public: false
+  prompts:
+    use: true
+    create: true
+    share: true
+    public: false
+  sharedLinks:
+    create: true
+    share: true
+    public: false
+  temporaryChat: true
+  retentionMode: 'all'
+  generalChatRetention: 2160
+  temporaryChatRetention: 24
+  retainAgentFiles: true
+
+memory:
+  disabled: true
+
+balance:
+  enabled: true
+  startBalance: 20000000
+  autoRefillEnabled: true
+  refillIntervalValue: 1
+  refillIntervalUnit: 'months'
+  refillAmount: 20000000
+
+transactions:
+  enabled: true
+
+endpoints:
+  custom:
+    - name: 'xAI'
+      apiKey: '${XAI_API_KEY}'
+      baseURL: 'https://api.x.ai/v1'
+      models:
+        default: ['grok-4.7']
+        fetch: false
+      titleConvo: true
+      titleModel: 'current_model'
+      tokenConfig:
+        grok-4.7:
+          prompt: 2
+          completion: 6
+          cacheRead: 0.5
+          context: 256000
+  agents:
+    allowedProviders: ['anthropic', 'openAI', 'xAI']
+    capabilities:
+      - 'deferred_tools'
+      - 'file_search'
+      - 'artifacts'
+      - 'subagents'
+      - 'context'
+      - 'skills'
+      - 'ask_user_question'
+      - 'tools'
+
+modelSpecs:
+  enforce: true
+  prioritize: true
+  addedEndpoints: ['agents']
+  list:
+    - name: 'claude-everyday'
+      label: 'Claude: everyday writing'
+      description: 'Emails, quotes, proofs and everyday questions'
+      default: true
+      preset: { endpoint: anthropic, model: claude-sonnet-5-5 }
+    - name: 'claude-deep'
+      label: 'Claude: deep work'
+      description: 'Long documents, estimates and careful reasoning'
+      preset: { endpoint: anthropic, model: claude-opus-5-5 }
+    - name: 'gpt-analysis'
+      label: 'GPT: data and spreadsheets'
+      description: 'Spreadsheets, tables and numbers'
+      preset: { endpoint: openAI, model: gpt-6-sol }
+    - name: 'grok-research'
+      label: 'Grok: current events research'
+      description: 'Market and current events research'
+      preset: { endpoint: xAI, model: grok-4.7 }

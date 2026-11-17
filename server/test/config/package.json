@@ -1,0 +1,12 @@
+{
+  "name": "pressroom-config-check",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node validate.mjs ../../librechat.yaml"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "librechat-data-provider": "0.8.530"
+  }
+}

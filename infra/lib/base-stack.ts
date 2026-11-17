@@ -5,6 +5,7 @@ import { Deploy } from './deploy.js';
 import { Dns } from './dns.js';
 import { DnsFirewall } from './dns-firewall.js';
 import { Network } from './network.js';
+import { Schedules } from './schedules.js';
 import { Server } from './server.js';
 import { Snapshots } from './snapshots.js';
 
@@ -35,6 +36,7 @@ export class BaseStack extends Stack {
     new Snapshots(this, 'Snapshots');
     new Budget(this, 'Budget', { alertEmail: props.alertEmail });
     const deploy = new Deploy(this, 'Deploy');
+    new Schedules(this, 'Schedules', { instance: this.server.instance });
 
     new CfnOutput(this, 'InstanceId', { value: this.server.instance.instanceId });
     new CfnOutput(this, 'PrivateIp', { value: this.server.instance.instancePrivateIp });

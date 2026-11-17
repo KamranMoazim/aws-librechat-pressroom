@@ -45,6 +45,22 @@ config()
   put "$name" String "$value"
 }
 
+provider_key()
+{
+  local name="/pressroom/secrets/$1" value
+  if exists "$name" && [[ "${ROTATE_PROVIDER_KEYS:-}" != "1" ]]
+  then
+    echo "kept $name"
+    return
+  fi
+  read -r -s -p "$2 (empty to skip): " value
+  echo
+  if [[ -n "$value" ]]
+  then
+    put "$name" SecureString "$value"
+  fi
+}
+
 # CREDS_KEY and CREDS_IV are never regenerated: stored credentials become unreadable without them.
 generate creds-key 32
 generate creds-iv 16
@@ -70,3 +86,7 @@ else
   echo
   put /pressroom/secrets/openid-client-secret SecureString "$secret"
 fi
+
+provider_key anthropic-api-key "Anthropic API key"
+provider_key openai-api-key "OpenAI API key"
+provider_key xai-api-key "xAI API key"

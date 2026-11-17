@@ -30,6 +30,7 @@ services:
       - MONGO_APP_PASSWORD=${MONGO_APP_PASSWORD}
     volumes:
       - ./mongo/init:/docker-entrypoint-initdb.d:ro
+      - ./reports:/reports:ro
 
   meilisearch:
     image: getmeili/meilisearch:v1.35.1@sha256:8b57fc3c7f46535ddef3828df1538465ac19d892eb57c9a10da6df0880bd5856
